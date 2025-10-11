@@ -45,7 +45,7 @@ export function Chat() {
     try {
       // Send the user's message AND the current conversation history to the brain
       const response = await axios.post<{ reply: string; history: Message[] }>(
-        "http://localhost:3002/api/chat",
+        "http://136.144.28.76/chatbot-api/chat",
         {
           message: input,
           conversationHistory: messages, // <-- Send the OLD history
