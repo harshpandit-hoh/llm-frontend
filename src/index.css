@@ -182,3 +182,35 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* Apply these styles ONLY when the screen width is 600px or less */
+@media (max-width: 600px) {
+  #root {
+    padding: 0.5rem; /* Reduce the padding around the whole app */
+    height: 100vh; /* Make the root container take full screen height */
+  }
+
+  h1 {
+    display: none;
+  }
+
+  .chat-container {
+    height: 100%; /* Make the chat container fill the #root element */
+    border: none; /* Remove the border for a more seamless look */
+    border-radius: 0; /* Remove rounded corners */
+  }
+
+  .chat-window {
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  .chat-bubble {
+    max-width: 85%; /* Allow bubbles to be a little wider */
+  }
+
+  .chat-input-form input,
+  .chat-input-form button {
+    padding: 8px 15px; /* Make the input and button slightly smaller */
+    font-size: 0.95rem;
+  }
+}
