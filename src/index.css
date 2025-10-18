@@ -200,7 +200,7 @@ button:focus-visible {
   }
 
   .chat-window {
-    max-height: 88vh;
+    height: 88vh;
     overflow-y: auto;
   }
 
