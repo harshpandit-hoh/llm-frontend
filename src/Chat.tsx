@@ -1,7 +1,7 @@
-import { useState, type FormEvent, useEffect, useRef } from "react";
-import axios from "axios";
 import { marked } from "marked";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Message } from "./interface";
+import { handleSend } from "./api";
 
 export function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -13,7 +13,7 @@ export function Chat() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async (e: FormEvent) => {
+  const handleSendHandler = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
@@ -22,31 +22,9 @@ export function Chat() {
     setInput("");
     setIsLoading(true);
 
-    try {
-      const response = await axios.post<{ reply: string; history: Message[] }>(
-        "http://136.144.28.76/chatbot-api/chat", //? Production server
-        // "http://localhost:3002/api/chat", //? local server
-        {
-          message: input,
-          conversationHistory: messages, // <-- Send the OLD history
-        }
-      );
-
-      setMessages(response.data.history);
-    } catch (error) {
-      console.error("Error communicating with the AI agent:", error);
-      const errorMessage: Message = {
-        role: "model",
-        parts: [
-          {
-            text: "Sorry, I'm having trouble connecting to my brain right now.",
-          },
-        ],
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
+    await handleSend(input, messages, setMessages).finally(() => {
       setIsLoading(false);
-    }
+    });
   };
 
   return (
@@ -75,7 +53,7 @@ export function Chat() {
         )}
         <div ref={chatEndRef} />
       </div>
-      <form className="chat-input-form" onSubmit={handleSend}>
+      <form className="chat-input-form" onSubmit={handleSendHandler}>
         <input
           type="text"
           value={input}
