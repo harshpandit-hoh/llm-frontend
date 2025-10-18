@@ -1,33 +1,14 @@
-// src/Chat.tsx
-
 import { useState, type FormEvent, useEffect, useRef } from "react";
 import axios from "axios";
 import { marked } from "marked";
-
-// Define the structure of a single message part for type safety
-interface MessagePart {
-  text?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  functionCall?: any; // You can define this more strictly if needed
-}
-
-// Define the structure of a full message in the conversation history
-interface Message {
-  role: "user" | "model" | "tool";
-  parts: MessagePart[];
-}
+import type { Message } from "./interface";
 
 export function Chat() {
-  // State to hold the entire conversation history
   const [messages, setMessages] = useState<Message[]>([]);
-  // State for the user's current input
   const [input, setInput] = useState("");
-  // State to show a loading indicator while the AI is thinking
   const [isLoading, setIsLoading] = useState(false);
-  // Ref to the chat container to auto-scroll to the bottom
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Effect to scroll to the latest message whenever the messages array changes
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -36,14 +17,12 @@ export function Chat() {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    // Immediately add the user's message to the UI for a responsive feel
     const userMessage: Message = { role: "user", parts: [{ text: input }] };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      // Send the user's message AND the current conversation history to the brain
       const response = await axios.post<{ reply: string; history: Message[] }>(
         "http://136.144.28.76/chatbot-api/chat", //? Production server
         // "http://localhost:3002/api/chat", //? local server
@@ -53,11 +32,9 @@ export function Chat() {
         }
       );
 
-      // Update the entire conversation with the full history from the backend
       setMessages(response.data.history);
     } catch (error) {
       console.error("Error communicating with the AI agent:", error);
-      // Add an error message to the chat for the user
       const errorMessage: Message = {
         role: "model",
         parts: [
@@ -76,9 +53,8 @@ export function Chat() {
     <div className="chat-container">
       <div className="chat-window">
         {messages.map((msg, index) => {
-          // We only want to display messages that have simple text content
           const messageText = msg.parts[0]?.text;
-          if (!messageText) return null; // Don't render tool calls or empty messages
+          if (!messageText) return null;
 
           return (
             <div key={index} className={`chat-bubble ${msg.role}`}>
