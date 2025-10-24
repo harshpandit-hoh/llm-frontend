@@ -14,7 +14,7 @@ const handleSend = async (
 ) => {
   try {
     const response = await axios.post<{ reply: string; history: Message[] }>(
-      `${baseUrl}/chat`,
+      `${baseUrl}/mcp/chat`,
       {
         message: input,
         conversationHistory: messages,
